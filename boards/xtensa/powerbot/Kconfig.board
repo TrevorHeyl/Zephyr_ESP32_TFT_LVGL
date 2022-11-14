@@ -1,0 +1,4 @@
+
+config BOARD_POWERBOT
+	bool "PowerBot"
+	depends on SOC_ESP32

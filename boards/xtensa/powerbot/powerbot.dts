@@ -1,0 +1,150 @@
+/dts-v1/;
+
+#include <espressif/esp32.dtsi>
+#include "powerbot.dtsi"
+
+/ {
+	model = "esp32";
+	compatible = "espressif,esp32";
+
+	aliases {
+		led0 = &blue_led;
+		led1 = &green_led;
+		led2 = &red_led;
+		sw0 = &button0;
+		lora0 = &sx1276;
+	};
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+		zephyr,flash = &flash0;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		blue_led: led_0 {
+			gpios =  <&gpio0 5 GPIO_ACTIVE_LOW>;
+			label = "Blue - LED0";
+		};
+
+		green_led: led_1 {
+			gpios =  <&gpio0 17 GPIO_ACTIVE_LOW>;
+			label = "Green - LED1";
+		};
+
+		red_led: led_2 {
+			gpios =  <&gpio0 4 GPIO_ACTIVE_LOW>;
+			label = "Red - LED2";
+		};
+	};
+
+	buttons {
+             compatible = "gpio-keys";
+             button0: button_0 {
+                     gpios = < &gpio0 0 GPIO_ACTIVE_LOW>;
+                     label = "User button";
+             };
+             /* ... other buttons ... */
+     };
+};
+
+&cpu0 {
+	clock-frequency = <ESP32_CLK_CPU_240M>;
+};
+
+&cpu1 {
+	clock-frequency = <ESP32_CLK_CPU_240M>;
+};
+
+&uart0 {
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&console_uart>;
+	pinctrl-names = "default";
+};
+
+&uart1 {
+	status = "okay";
+	current-speed = <9600>;
+	pinctrl-0 = <&rs485_uart>;
+	pinctrl-names = "default";
+
+	modbus0 {
+		compatible = "zephyr,modbus-serial";
+		status = "okay";
+		label = "Modbus";
+		de-gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
+		re-gpios = <&gpio0 26 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&spi2 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	pinctrl-0 = <&sx1276_spi>;
+	pinctrl-names = "default";
+
+	sx1276: sx1276@0{
+		compatible = "semtech,sx1276";
+		label = "SX1276";
+		spi-max-frequency = <25000000>;
+		reg = <0>;
+		reset-gpios = <&gpio0 23 GPIO_ACTIVE_LOW>;
+		dio-gpios = <&gpio0 21 GPIO_ACTIVE_HIGH>;
+		power-amplifier-output = "pa-boost";
+	};
+};
+
+
+&flash0 {
+	status = "okay";
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* Reserve 60kB for the bootloader */
+		boot_partition: partition@1000 {
+			label = "mcuboot";
+			reg = <0x00001000 0x0000F000>;
+			read-only;
+		};
+
+		/* Reserve 1024kB for the application in slot 0 */
+		slot0_partition: partition@10000 {
+			label = "image-0";
+			reg = <0x00010000 0x00100000>;
+		};
+
+		/* Reserve 1024kB for the application in slot 1 */
+		slot1_partition: partition@110000 {
+			label = "image-1";
+			reg = <0x00110000 0x00100000>;
+		};
+
+		/* Reserve 256kB for the scratch partition */
+		scratch_partition: partition@210000 {
+			   label = "image-scratch";
+			   reg = <0x00210000 0x00040000>;
+		};
+
+		storage_partition: partition@250000 {
+			label = "storage";
+			reg = <0x00250000 0x00006000>;
+		};
+	};
+};
+
+

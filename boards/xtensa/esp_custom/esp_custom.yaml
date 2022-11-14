@@ -1,0 +1,18 @@
+identifier: esp_wrover_kit
+name: ESP CUSTOM
+type: mcu
+arch: xtensa
+toolchain:
+  - zephyr
+supported:
+  - gpio
+  - i2c
+  - spi
+  - watchdog
+  - uart
+  - pinmux
+  - nvs
+  - pwm
+testing:
+  ignore_tags:
+    - net

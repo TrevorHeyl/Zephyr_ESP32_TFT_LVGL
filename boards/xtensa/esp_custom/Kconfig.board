@@ -1,0 +1,8 @@
+# ESP-WROVER-KIT board configuration
+
+# Copyright (c) 2021 Espressif Systems (Shanghai) Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_ESP_CUSTOM
+	bool "ESP-Custom Development Board"
+	depends on SOC_ESP32
