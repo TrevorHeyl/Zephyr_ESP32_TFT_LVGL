@@ -1,5 +1,5 @@
 # Zephyr ESP32_TFT ST7789 SPI driver exmaple
-Zephyr standup using ST7789 based SPI TFT display
+Zephyr standup using ST7789 based SPI TFT display and the lvgl module
 
 Pin wiring
 
